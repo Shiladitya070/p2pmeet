@@ -27,7 +27,6 @@ function VideoCompo({ stream, audioStream, name }) {
       ) : (
         <>
           <video
-            style={{ transform: "rotateY(180deg)" }}
             className="rounded-lg m-2 bg-red-700 p-2"
             ref={videoRef}
             autoPlay
