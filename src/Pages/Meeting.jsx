@@ -12,8 +12,9 @@ export default function Meeting() {
   const [isInMeeting, setIsInMeeting] = useState(false);
 
   console.log("rendering meeting");
+  console.log("📩", process.env.REACT_APP_SERVER);
   useEffect(() => {
-    const s = socketIO.connect(process.env.SERVER);
+    const s = socketIO.connect(process.env.REACT_APP_SERVER);
     s.emit("join", {
       roomId,
     });
