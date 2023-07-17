@@ -13,7 +13,7 @@ export default function Meeting() {
 
   console.log("rendering meeting");
   useEffect(() => {
-    const s = socketIO.connect("http://localhost:3000");
+    const s = socketIO.connect(process.env.SERVER);
     s.emit("join", {
       roomId,
     });
