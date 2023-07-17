@@ -7,6 +7,7 @@ function Home() {
   const handleSubmit = () => {
     navigate(`/meeting/${meetingId}`);
   };
+  console.log("home");
   return (
     <div className="flex min-h-screen justify-center items-center ">
       <div className="shadow-xl flex flex-col bg-slate-500 bg-opacity-20 w-[350px] border-2 rounded-xl p-3 py-4 gap-2 m-2">
@@ -29,7 +30,11 @@ function Home() {
               className="grow px-4 py-2 rounded-full outline-none text-black "
               placeholder="Enter meet id"
             />
-            <button type="submit" className="bg-slate-500 p-2 rounded-full">
+            <button
+              disabled={!meetingId}
+              type="submit"
+              className="bg-slate-500 p-2 rounded-full"
+            >
               join
             </button>
           </div>
