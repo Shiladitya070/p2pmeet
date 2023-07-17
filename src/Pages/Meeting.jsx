@@ -53,7 +53,7 @@ export default function Meeting() {
       pc.setRemoteDescription(description);
       pc.ontrack = (e) => {
         const track = e.track;
-        toast.success("new track");
+        // toast.success("new track");
         if (track.kind === "video") {
           setOtherVideo(new MediaStream([track]));
           console.log("video added");
