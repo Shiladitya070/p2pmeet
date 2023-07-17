@@ -16,7 +16,7 @@ function VideoCompo({ stream, audioStream, name }) {
   }, [audioRef, audioStream]);
 
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className="flex flex-col justify-center items-center mx-2">
       <h1 className=" font-mono ">{name}</h1>
 
       {!audioStream ? (
