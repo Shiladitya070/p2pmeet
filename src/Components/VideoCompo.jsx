@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 function VideoCompo({ stream, audioStream, name }) {
   const videoRef = useRef();
   const audioRef = useRef();
+  const [mute, setMute] = useState(false);
   useEffect(() => {
     if (videoRef && videoRef.current) {
       videoRef.current.srcObject = stream;
@@ -16,6 +17,8 @@ function VideoCompo({ stream, audioStream, name }) {
 
   return (
     <div className="flex flex-col justify-center items-center">
+      <h1 className=" font-mono ">{name}</h1>
+
       {!audioStream ? (
         <video
           style={{ transform: "rotateY(180deg)" }}
@@ -26,16 +29,27 @@ function VideoCompo({ stream, audioStream, name }) {
         />
       ) : (
         <>
-          <video
-            className="rounded-lg m-2 bg-red-700 p-2"
-            ref={videoRef}
-            autoPlay
-            muted
-          />
-          <audio ref={audioRef} controls autoplay />
+          <div className="flex flex-col justify-center items-center ">
+            <video className="rounded-lg m-2" ref={videoRef} autoPlay muted />
+            <button
+              onClick={() => setMute(!mute)}
+              className="bg-slate-400 rounded-md p-1"
+            >
+              {mute ? "unmute" : "mute"}
+            </button>
+
+            <audio
+              style={{ background: "none" }}
+              className="relative bottom-10"
+              ref={audioRef}
+              controls
+              muted={mute}
+              hidden
+              autoPlay
+            />
+          </div>
         </>
       )}
-      <h1 className=" font-mono ">{name}</h1>
     </div>
   );
 }

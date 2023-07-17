@@ -35,6 +35,7 @@ export default function Meeting() {
       });
 
     s.on("localDescription", async ({ description }) => {
+      // createOffer();
       console.log("localDescription");
       // Receiving video -
       let pc = new RTCPeerConnection({
@@ -118,23 +119,33 @@ export default function Meeting() {
     setIsInMeeting(true);
   };
   const mainVideo = (
+    <div className="flex flex-wrap gap-2 justify-center items-baseline mx-4">
+      <VideoCompo stream={myVideo} self={true} name="your name" />
+
+      {otherVideo ? (
+        <VideoCompo
+          stream={otherVideo}
+          audioStream={otherAudio}
+          self={false}
+          name={"hello"}
+        />
+      ) : (
+        <h1>Waiting for others</h1>
+      )}
+    </div>
+  );
+
+  return (
     <div className="min-h-screen flex justify-center ">
       <div className="absolute top-0 flex flex-col justify-center items-center ">
         <h1 className="m-2 bg-slate-300 bg-opacity-10 border-2 w-fit p-2 font-mono rounded-lg">
           Room Id: {roomId}
         </h1>
-        <div className="flex flex-wrap gap-2 justify-center items-center mx-4">
-          <VideoCompo stream={myVideo} self={true} name="your name" />
-
-          {otherVideo ? (
-            <VideoCompo
-              stream={otherVideo}
-              audioStream={otherAudio}
-              self={false}
-              name={"hello"}
-            />
+        <div className="flex justify-center items-center">
+          {isInMeeting ? (
+            mainVideo
           ) : (
-            <h1>Waiting for others</h1>
+            <VideoCompo stream={myVideo} self={true} name="your name" />
           )}
         </div>
       </div>
@@ -148,6 +159,4 @@ export default function Meeting() {
       )}
     </div>
   );
-
-  return mainVideo;
 }
