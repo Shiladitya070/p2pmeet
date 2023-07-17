@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import socketIO from "socket.io-client";
 import VideoCompo from "../Components/VideoCompo";
+import { toast } from "react-hot-toast";
 
 export default function Meeting() {
   const params = useParams();
@@ -35,7 +36,10 @@ export default function Meeting() {
       });
 
     s.on("localDescription", async ({ description }) => {
-      // createOffer();
+      toast("Someone joined", {
+        icon: "🎉",
+      });
+
       console.log("localDescription");
       // Receiving video -
       let pc = new RTCPeerConnection({
@@ -49,6 +53,7 @@ export default function Meeting() {
       pc.setRemoteDescription(description);
       pc.ontrack = (e) => {
         const track = e.track;
+        toast.success("new track");
         if (track.kind === "video") {
           setOtherVideo(new MediaStream([track]));
           console.log("video added");
@@ -71,10 +76,12 @@ export default function Meeting() {
       await pc.setLocalDescription(await pc.createAnswer());
       s.emit("remoteDescription", { description: pc.localDescription });
       console.log("set local description");
+      // createOffer();
     });
   }, []);
   const createOffer = () => {
     // sending pc
+    toast.success("Meeting start");
     let pc = new RTCPeerConnection({
       iceServers: [
         {
@@ -83,15 +90,10 @@ export default function Meeting() {
       ],
     });
     console.log("pc created", pc);
-    // pc.onicecandidate = ({ candidate }) => {
-    //   // socket.emit("iceCandidate", { candidate });
-    //   console.log(candidate);
-    //   console.log("emmied iceCandidate");
-    // };
+
     console.log("🥺", myVideo.getAudioTracks());
     pc.addTrack(myVideo.getVideoTracks()[0]);
     pc.addTrack(myVideo.getAudioTracks()[0]);
-    // pc.addTrack(myVideo.getAudioTracks()[0]);
 
     console.log("myvideo added ");
     pc.onicecandidate = ({ candidate }) => {
