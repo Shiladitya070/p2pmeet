@@ -8,6 +8,7 @@ export default function Meeting() {
   const roomId = params.roomId;
   const [myVideo, setMyVideo] = useState();
   const [otherVideo, setOtherVideo] = useState();
+  const [otherAudio, setOtherAudio] = useState();
   const [socket, setSocket] = useState(null);
   const [isInMeeting, setIsInMeeting] = useState(false);
 
@@ -46,8 +47,14 @@ export default function Meeting() {
       console.log("pc made");
       pc.setRemoteDescription(description);
       pc.ontrack = (e) => {
-        setOtherVideo(new MediaStream([e.track]));
-        console.log("added remote video");
+        const track = e.track;
+        if (track.kind === "video") {
+          setOtherVideo(new MediaStream([track]));
+          console.log("video added");
+        } else if (track.kind === "audio") {
+          setOtherAudio(new MediaStream([track]));
+          console.log("audio added");
+        }
       };
 
       s.on("iceCandidate", ({ candidate }) => {
@@ -80,8 +87,11 @@ export default function Meeting() {
     //   console.log(candidate);
     //   console.log("emmied iceCandidate");
     // };
-    console.log("🥺", myVideo.getVideoTracks());
+    console.log("🥺", myVideo.getAudioTracks());
     pc.addTrack(myVideo.getVideoTracks()[0]);
+    pc.addTrack(myVideo.getAudioTracks()[0]);
+    // pc.addTrack(myVideo.getAudioTracks()[0]);
+
     console.log("myvideo added ");
     pc.onicecandidate = ({ candidate }) => {
       socket.emit("iceCandidate", { candidate });
@@ -114,10 +124,15 @@ export default function Meeting() {
           Room Id: {roomId}
         </h1>
         <div className="flex flex-wrap gap-2 justify-center items-center mx-4">
-          <VideoCompo stream={myVideo} name="your name" />
+          <VideoCompo stream={myVideo} self={true} name="your name" />
 
           {otherVideo ? (
-            <VideoCompo stream={otherVideo} name={"hello"} />
+            <VideoCompo
+              stream={otherVideo}
+              audioStream={otherAudio}
+              self={false}
+              name={"hello"}
+            />
           ) : (
             <h1>Waiting for others</h1>
           )}
