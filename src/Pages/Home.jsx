@@ -11,7 +11,7 @@ function Home() {
   return (
     <div className="flex min-h-screen justify-center items-center ">
       <div className="shadow-xl flex flex-col bg-slate-500 bg-opacity-20 w-[350px] border-2 rounded-xl p-3 py-4 gap-2 m-2">
-        <h1 className="text-4xl ">Welcome to DarkMeet</h1>
+        <h1 className="text-4xl ">Welcome to p2pmeet</h1>
         <form
           onSubmit={handleSubmit}
           className="mt-3 flex flex-col font-mono gap-2 "
