@@ -1,17 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import socketIO from "socket.io-client";
 
 function ChatBox({ roomId, socket }) {
   const [messages, setMessages] = useState([]);
+  const [user, setUser] = useState();
   const [text, setText] = useState("");
+  const s = socket;
+  useEffect(() => {
+    if (s) {
+      toast.success("got socket ");
+      s.on("message", () => {
+        toast.success("Message");
+      });
+    }
+  }, []);
+
   const sendText = (e) => {
     e.preventDefault();
-    if (text.trim() !== "") {
-      const updatedMessages = [...messages, text];
-      setMessages(updatedMessages);
+    if (!user) {
+      const name = prompt("Please enter your name:");
+      if (name) {
+        if (name.trim() === "") {
+          return toast.error("empty name");
+        }
+      } else {
+        toast.error("Set a username");
+        return;
+      }
+      setUser(name);
+      return null;
+    }
+    if (text.trim() !== "" && user) {
+      s.emit("message", { roomId, user, text });
+
       setText("");
     } else {
-      toast.error("empty message");
+      toast.error("empty message or user");
     }
     console.log(messages);
   };
@@ -22,7 +47,7 @@ function ChatBox({ roomId, socket }) {
       <ul className="flex flex-col flex-grow w-full break-all gap-1">
         {messages.map((message, i) => (
           <li className="bg-slate-900 w-full bg-opacity-20 p-1 " key={i}>
-            {message}
+            <span className="font-bold">{message.user}</span> : {message.text}
           </li>
         ))}
       </ul>

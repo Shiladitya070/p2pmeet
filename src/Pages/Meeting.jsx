@@ -17,9 +17,7 @@ export default function Meeting() {
   console.log("rendering meeting");
   console.log("📩", process.env.REACT_APP_SERVER);
   useEffect(() => {
-    const s = socketIO.connect(
-      process.env.REACT_APP_SERVER || "https://darkmeet-server.fly.dev"
-    );
+    const s = socketIO.connect(process.env.REACT_APP_SERVER);
     s.emit("join", {
       roomId,
     });
