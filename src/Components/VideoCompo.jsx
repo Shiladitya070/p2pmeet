@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 
-function VideoCompo({ stream, audioStream, name }) {
+function VideoCompo({ stream, audioStream, user }) {
   const videoRef = useRef();
   const audioRef = useRef();
   const [mute, setMute] = useState(false);
@@ -17,7 +17,7 @@ function VideoCompo({ stream, audioStream, name }) {
 
   return (
     <div className="flex flex-col justify-center items-center mx-2">
-      <h1 className=" font-mono ">{name}</h1>
+      <h1 className=" font-mono ">{user}</h1>
 
       {!audioStream ? (
         <video

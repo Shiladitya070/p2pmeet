@@ -13,11 +13,28 @@ export default function Meeting() {
   const [otherAudio, setOtherAudio] = useState();
   const [socket, setSocket] = useState(null);
   const [isInMeeting, setIsInMeeting] = useState(false);
-
+  const [user, setUser] = useState();
   console.log("rendering meeting");
   console.log("📩", process.env.REACT_APP_SERVER);
   useEffect(() => {
     const s = socketIO.connect(process.env.REACT_APP_SERVER);
+    let localUser = localStorage.getItem("user");
+    console.log("💖💖", localUser);
+
+    console.log("💖", user);
+    if (!localUser) {
+      let name = prompt("Please enter your name");
+      if (name.trim() !== "") {
+        localStorage.setItem("user", name.trim());
+        setUser(name.trim());
+      } else {
+        toast.error("Please enter a valid name");
+      }
+    } else {
+      setUser(localUser);
+      toast.success(`Welcome back ${localUser}`);
+    }
+
     s.emit("join", {
       roomId,
     });
@@ -121,7 +138,7 @@ export default function Meeting() {
   };
   const mainVideo = (
     <>
-      <VideoCompo stream={myVideo} self={true} name="your name" />
+      <VideoCompo user={user} stream={myVideo} self={true} name="your name" />
 
       {otherVideo ? (
         <VideoCompo
@@ -142,7 +159,16 @@ export default function Meeting() {
         <div className="flex flex-col md:flex-row col-span-3 justify-center items-baseline">
           {mainVideo}
         </div>
-        <ChatBox roomId={roomId} socket={socket} />
+        {user ? (
+          <ChatBox
+            roomId={roomId}
+            socket={socket}
+            user={user}
+            setUser={setUser}
+          />
+        ) : (
+          <p>new username</p>
+        )}
       </div>
       {!isInMeeting && (
         <button

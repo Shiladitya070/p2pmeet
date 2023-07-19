@@ -1,38 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import socketIO from "socket.io-client";
 
-function ChatBox({ roomId, socket }) {
+function ChatBox({ roomId, socket, user, setUser }) {
   const [messages, setMessages] = useState([]);
-  const [user, setUser] = useState();
   const [text, setText] = useState("");
-  const s = socket;
   useEffect(() => {
-    if (s) {
-      toast.success("got socket ");
-      s.on("message", () => {
-        toast.success("Message");
+    if (socket) {
+      console.log("❌", user);
+      socket.on("message", (data) => {
+        if (data.roomId === roomId) {
+          console.log("🥺🥺🥺🥺🥺", data.user, user);
+          if (data.user !== user) {
+            toast(`${data.user} : ${data.text}`, {
+              icon: "✉️",
+            });
+          }
+          setMessages((preText) => [
+            ...preText,
+            { user: data.user, text: data.text },
+          ]);
+        }
       });
     }
-  }, []);
+  }, [socket]);
 
   const sendText = (e) => {
     e.preventDefault();
-    if (!user) {
-      const name = prompt("Please enter your name:");
-      if (name) {
-        if (name.trim() === "") {
-          return toast.error("empty name");
-        }
-      } else {
-        toast.error("Set a username");
-        return;
-      }
-      setUser(name);
-      return null;
-    }
     if (text.trim() !== "" && user) {
-      s.emit("message", { roomId, user, text });
+      socket.emit("message", { roomId, user, text });
 
       setText("");
     } else {
