@@ -7,7 +7,7 @@ function Home() {
   const handleSubmit = () => {
     navigate(`/meeting/${meetingId}`);
   };
-  console.log("home");
+  // console.log("home");
   return (
     <div className="flex min-h-screen justify-center items-center ">
       <div className="shadow-lg flex flex-col bg-slate-500 bg-opacity-20 w-[350px] border-2 rounded-xl p-3 py-4 gap-2 m-2">

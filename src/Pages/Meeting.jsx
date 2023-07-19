@@ -14,14 +14,14 @@ export default function Meeting() {
   const [socket, setSocket] = useState(null);
   const [isInMeeting, setIsInMeeting] = useState(false);
   const [user, setUser] = useState();
-  console.log("rendering meeting");
-  console.log("📩", process.env.REACT_APP_SERVER);
+  // console.log("rendering meeting");
+  // console.log("📩", process.env.REACT_APP_SERVER);
   useEffect(() => {
     const s = socketIO.connect(process.env.REACT_APP_SERVER);
     let localUser = localStorage.getItem("user");
-    console.log("💖💖", localUser);
+    // console.log("💖💖", localUser);
 
-    console.log("💖", user);
+    // console.log("💖", user);
     if (!localUser) {
       let name = prompt("Please enter your name");
       if (name.trim() !== "") {
@@ -39,7 +39,7 @@ export default function Meeting() {
       roomId,
     });
     if (s) {
-      console.log("connection done", s);
+      // console.log("connection done", s);
       setSocket(s);
     }
     navigator.mediaDevices
@@ -56,7 +56,7 @@ export default function Meeting() {
         icon: "🎉",
       });
 
-      console.log("localDescription");
+      // console.log("localDescription");
       // Receiving video -
       let pc = new RTCPeerConnection({
         iceServers: [
@@ -65,33 +65,33 @@ export default function Meeting() {
           },
         ],
       });
-      console.log("pc made");
+      // console.log("pc made");
       pc.setRemoteDescription(description);
       pc.ontrack = (e) => {
         const track = e.track;
         // toast.success("new track");
         if (track.kind === "video") {
           setOtherVideo(new MediaStream([track]));
-          console.log("video added");
+          // console.log("video added");
         } else if (track.kind === "audio") {
           setOtherAudio(new MediaStream([track]));
-          console.log("audio added");
+          // console.log("audio added");
         }
       };
 
       s.on("iceCandidate", ({ candidate }) => {
         pc.addIceCandidate(candidate);
-        console.log("add ice candidate");
+        // console.log("add ice candidate");
       });
 
       pc.onicecandidate = ({ candidate }) => {
         s.emit("iceCandidateReply", { candidate });
-        console.log("ice candidate reply");
+        // console.log("ice candidate reply");
       };
 
       await pc.setLocalDescription(await pc.createAnswer());
       s.emit("remoteDescription", { description: pc.localDescription });
-      console.log("set local description");
+      // console.log("set local description");
       // createOffer();
     });
   }, []);
@@ -105,23 +105,23 @@ export default function Meeting() {
         },
       ],
     });
-    console.log("pc created", pc);
+    // console.log("pc created", pc);
 
-    console.log("🥺", myVideo.getAudioTracks());
+    // console.log("🥺", myVideo.getAudioTracks());
     pc.addTrack(myVideo.getVideoTracks()[0]);
     pc.addTrack(myVideo.getAudioTracks()[0]);
 
-    console.log("myvideo added ");
+    // console.log("myvideo added ");
     pc.onicecandidate = ({ candidate }) => {
       socket.emit("iceCandidate", { candidate });
-      console.log("emmied iceCandidate");
+      // console.log("emmied iceCandidate");
     };
 
     pc.onnegotiationneeded = async () => {
-      console.log("onnegotiationneeded");
+      // console.log("onnegotiationneeded");
       try {
         await pc.setLocalDescription(await pc.createOffer());
-        console.log(pc.localDescription);
+        // console.log(pc.localDescription);
         socket.emit("localDescription", { description: pc.localDescription });
       } catch (err) {
         console.error(err);

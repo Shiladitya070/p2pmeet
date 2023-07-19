@@ -6,10 +6,10 @@ function ChatBox({ roomId, socket, user, setUser }) {
   const [text, setText] = useState("");
   useEffect(() => {
     if (socket) {
-      console.log("❌", user);
+      // console.log("❌", user);
       socket.on("message", (data) => {
         if (data.roomId === roomId) {
-          console.log("🥺🥺🥺🥺🥺", data.user, user);
+          // console.log("🥺🥺🥺🥺🥺", data.user, user);
           if (data.user !== user) {
             toast(`${data.user} : ${data.text}`, {
               icon: "✉️",
@@ -33,7 +33,7 @@ function ChatBox({ roomId, socket, user, setUser }) {
     } else {
       toast.error("empty message or user");
     }
-    console.log(messages);
+    // console.log(messages);
   };
 
   return (
