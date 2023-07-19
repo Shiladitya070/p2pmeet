@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import socketIO from "socket.io-client";
 import VideoCompo from "../Components/VideoCompo";
 import { toast } from "react-hot-toast";
+import ChatBox from "../Components/ChatBox";
 
 export default function Meeting() {
   const params = useParams();
@@ -12,13 +13,28 @@ export default function Meeting() {
   const [otherAudio, setOtherAudio] = useState();
   const [socket, setSocket] = useState(null);
   const [isInMeeting, setIsInMeeting] = useState(false);
-
+  const [user, setUser] = useState();
   console.log("rendering meeting");
   console.log("📩", process.env.REACT_APP_SERVER);
   useEffect(() => {
-    const s = socketIO.connect(
-      process.env.REACT_APP_SERVER || "https://darkmeet-server.fly.dev"
-    );
+    const s = socketIO.connect(process.env.REACT_APP_SERVER);
+    let localUser = localStorage.getItem("user");
+    console.log("💖💖", localUser);
+
+    console.log("💖", user);
+    if (!localUser) {
+      let name = prompt("Please enter your name");
+      if (name.trim() !== "") {
+        localStorage.setItem("user", name.trim());
+        setUser(name.trim());
+      } else {
+        toast.error("Please enter a valid name");
+      }
+    } else {
+      setUser(localUser);
+      toast.success(`Welcome back ${localUser}`);
+    }
+
     s.emit("join", {
       roomId,
     });
@@ -121,8 +137,8 @@ export default function Meeting() {
     setIsInMeeting(true);
   };
   const mainVideo = (
-    <div className="flex flex-wrap gap-2 justify-center items-baseline mx-4">
-      <VideoCompo stream={myVideo} self={true} name="your name" />
+    <>
+      <VideoCompo user={user} stream={myVideo} self={true} name="your name" />
 
       {otherVideo ? (
         <VideoCompo
@@ -134,22 +150,25 @@ export default function Meeting() {
       ) : (
         <h1>Waiting for others</h1>
       )}
-    </div>
+    </>
   );
 
   return (
     <div className="min-h-screen flex justify-center ">
-      <div className="absolute top-0 flex flex-col justify-center items-center ">
-        <h1 className="m-2 bg-slate-300 bg-opacity-10 border-2 w-fit p-2 font-mono rounded-lg">
-          Room Id: {roomId}
-        </h1>
-        <div className="flex justify-center items-center">
-          {isInMeeting ? (
-            mainVideo
-          ) : (
-            <VideoCompo stream={myVideo} self={true} name="your name" />
-          )}
+      <div className="absolute min-h-screen top-0 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 content-baseline">
+        <div className="flex flex-col md:flex-row col-span-3 justify-center items-baseline">
+          {mainVideo}
         </div>
+        {user ? (
+          <ChatBox
+            roomId={roomId}
+            socket={socket}
+            user={user}
+            setUser={setUser}
+          />
+        ) : (
+          <p>new username</p>
+        )}
       </div>
       {!isInMeeting && (
         <button
